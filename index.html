@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <link rel="stylesheet" src="./css/style.css">
+        <title>数字当てゲーム</title>
+    </head>
+    <body>
+        <div id="app">
+            <h1>数字当てゲーム</h1>
+            <p>選んだ数字とランダム数字が一致すると選んだ数字をポイントに加算。<br>はずれると選んだ数字の分、ポイントが減ります。<br></p>
+            <div v-if="limit != 0">
+                <dl :class="{'is-correct':result,'is-incorrect':result === false}">
+                    <dt class="random">{{random}}</dt>
+                    <dd>
+                        <button @click="sum(1)">1</button>
+                        <button @click="sum(2)">2</button>
+                        <button @click="sum(3)">3</button>
+                    </dd>
+                </dl>
+                <p>ボタンを押せるのはあと{{limit}}回です</p>
+            </div>
+            <dl>
+                <dt>あなたのポイント</dt>
+                <dd class="point" :class="{'is-minus':point < 0}">{{point}}</dd>
+            </dl>
+            <button v-if="limit == 0" @click="reset">リセット</button>
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/vue@2.5.17/dist/vue.min.js"></script>
+        <script>
+            var app = new Vue({
+                el: '#app',
+                data:{
+                    random:'?',
+                    limit:10,
+                    result:'',
+                    max:3,
+                    min:1,
+                    point:0
+                },
+                methods:{
+                    sum:function(e){
+                        this.random = Math.floor(Math.random()*(this.max + 1 - this.min)) + this.min;
+                        if(e == this.random){
+                            this.point += e;
+                            this.result = true;
+                        }else{
+                            this.point -= e;
+                            this.result = false;
+                        }
+                        this.limit -= 1;
+                    },
+                    reset:function(){
+                        this.limit = 10;
+                        this.point = 0;
+                        this.random = '?';
+                        this.result = '';
+                    }
+                }    
+            })
+        </script>
+        <style>
+            body {
+                text-align: center;
+            }
+            .random {
+                font-size: 3em;
+            }
+            .point {
+                font-size: 3em;
+                line-height: 1;
+                margin-top: 0;
+            }
+            dl {
+                border: 4px solid #ddd;
+                padding: 10px;
+                width: 240px;
+                margin: 1em auto;
+            }
+            dl.is-correct {
+                border-color: blue;
+                color: blue;
+            }
+            dl.is-incorrect {
+                border-color: red;
+                color: red;
+            }
+            dd {
+                margin: 0;
+                font-weight: bold;
+            }
+            .is-minus {
+                color: red;
+            }
+        </style>
+    </body>
+</html>
