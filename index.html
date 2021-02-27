@@ -4,64 +4,80 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
-        <link rel="stylesheet" src="./css/style.css">
-        <title>数字当てゲーム</title>
+        <title>Vueで作ったじゃんけん</title>
     </head>
     <body>
         <div id="app">
-            <h1>数字当てゲーム</h1>
-            <p>選んだ数字とランダム数字が一致すると選んだ数字をポイントに加算。<br>はずれると選んだ数字の分、ポイントが減ります。<br></p>
-            <div v-if="limit != 0">
-                <dl :class="{'is-correct':result,'is-incorrect':result === false}">
-                    <dt class="random">{{random}}</dt>
-                    <dd>
-                        <button @click="sum(1)">1</button>
-                        <button @click="sum(2)">2</button>
-                        <button @click="sum(3)">3</button>
-                    </dd>
-                </dl>
-                <p>ボタンを押せるのはあと{{limit}}回です</p>
+            <div class="wrap">
+                <div v-if="btn">
+                    <h2>数当てゲーム</h2>
+                    <p>選んだ数字とランダム数字が一致すると選んだ数字をポイントに加算。<br/>はずれると選んだ数字の分、ポイントが減ります。<br/></p>
+                    <div>
+                        <dl>
+                        <dt class="random">{{question}}</dt>
+                        <dd>
+                            <button @click="choice(1)">1</button>
+                            <button @click="choice(2)">2</button>
+                            <button @click="choice(3)">3</button>
+                        </dd>
+                        </dl>
+                        <p>ボタンを押せるのはあと{{turn}}回です</p>
+                    </div>
+                    <dl>
+                        <dt>あなたのポイント</dt>
+                        <dd class="point">{{myPoint}}</dd>
+                    </dl>
+                </div>
+                <div class="reset" v-else>
+                    <dl>
+                        <dt>あなたのポイント</dt>
+                        <dd class="point">{{myPoint}}</dd>
+                    </dl>
+                    <button 
+                        class="button"
+                        @click="reset"
+                    >リセット</button>
+                </div> 
             </div>
-            <dl>
-                <dt>あなたのポイント</dt>
-                <dd class="point" :class="{'is-minus':point < 0}">{{point}}</dd>
-            </dl>
-            <button v-if="limit == 0" @click="reset">リセット</button>
         </div>
         <script src="https://cdn.jsdelivr.net/npm/vue@2.5.17/dist/vue.min.js"></script>
         <script>
             var app = new Vue({
                 el: '#app',
                 data:{
-                    random:'?',
-                    limit:10,
-                    result:'',
-                    max:3,
-                    min:1,
-                    point:0
+                    question:'?',
+                    turn:10,
+                    myPoint:0,
+                    btn:true
                 },
                 methods:{
-                    sum:function(e){
-                        this.random = Math.floor(Math.random()*(this.max + 1 - this.min)) + this.min;
-                        if(e == this.random){
-                            this.point += e;
-                            this.result = true;
+                    choice:function(clickPoint){
+                        const randomPoint = Math.floor((Math.random())*3);
+                        const randomArray = [1,2,3]
+                        if(clickPoint === randomArray[randomPoint]){
+                            this.myPoint+=clickPoint;
                         }else{
-                            this.point -= e;
-                            this.result = false;
+                            this.myPoint-=clickPoint;
                         }
-                        this.limit -= 1;
+                        this.turn--;
+                        if(this.turn === 0){
+                            this.btn = false;
+                        }
                     },
                     reset:function(){
-                        this.limit = 10;
-                        this.point = 0;
-                        this.random = '?';
-                        this.result = '';
+                        this.btn = true;
+                        this.question = '?';
+                        this.turn = 10;
+                        this.myPoint = 0;
                     }
-                }    
+                }
             })
         </script>
         <style>
+            h2{
+            text-align: center;
+            font-size: 20px;
+            }
             body {
                 text-align: center;
             }
@@ -93,6 +109,20 @@
             }
             .is-minus {
                 color: red;
+            }
+            .reset{
+                margin-top: 100px;
+            }
+            .button{
+                background-color:skyblue;
+                padding: 20px;
+                color:#fff;
+                margin: 40px auto 0;
+                display: block;
+                width: 100px;
+                text-align: center;
+                border-radius:10px;
+                border:none;
             }
         </style>
     </body>
